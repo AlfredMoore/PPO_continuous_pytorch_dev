@@ -13,7 +13,7 @@ from tqdm import tqdm
 
 def evaluate_policy(args, env, agent, state_norm):
     times = 3
-    print('To evaluate {} times'.format(times))
+    # print('To evaluate {} times'.format(times))
     evaluate_reward = 0
     for _ in range(times):
         s = env.reset()
@@ -94,7 +94,7 @@ def main(args, env_name, number, seed):
     elif args.use_reward_scaling:  # Trick 4:reward scaling
         reward_scaling = RewardScaling(shape=1, gamma=args.gamma)
 
-    with tqdm(total=args.max_train_steps, desc='PPO Trainning', leave=True, ncols=80, unit='steps', unit_scale=True) as pbar:
+    with tqdm(total=args.max_train_steps, desc='PPO Trainning', leave=True, ncols=80, unit='steps', unit_scale=True, colour="red") as pbar:
         
         while total_steps < args.max_train_steps:
             s = env.reset()
@@ -147,7 +147,8 @@ def main(args, env_name, number, seed):
                 if replay_buffer.count == args.batch_size:
                     
                     # time.sleep(1)
-                    print("\n batch completed! steps: {}/{}".format(total_steps, args.max_train_steps))
+                    # print("\n batch completed! steps: {}/{}".format(total_steps, args.max_train_steps))
+                    tqdm.write("batch completed! steps: {}/{}".format(total_steps, args.max_train_steps))
                     
                     agent.update(replay_buffer, total_steps)
                     replay_buffer.count = 0
@@ -160,7 +161,8 @@ def main(args, env_name, number, seed):
                     evaluate_num += 1
                     evaluate_reward = evaluate_policy(args, env_evaluate, agent, state_norm)
                     evaluate_rewards.append(evaluate_reward)
-                    print("\n evaluate_num:{} \t evaluate_reward:{} \t".format(evaluate_num, evaluate_reward))
+                    # print("\n evaluate_num:{} \t evaluate_reward:{} \t".format(evaluate_num, evaluate_reward))
+                    tqdm.write("evaluate_num:{} \t evaluate_reward:{} \t".format(evaluate_num, evaluate_reward))
                     writer.add_scalar('step_rewards_{}'.format(env_name), evaluate_rewards[-1], global_step=total_steps)
                     # Save the rewards
                     if evaluate_num % args.save_freq == 0:
